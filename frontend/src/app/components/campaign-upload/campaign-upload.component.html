@@ -1,0 +1,61 @@
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">Carga Masiva de Campañas</h3>
+    </div>
+    <div class="card-body">
+      <div class="mb-4">
+        <p class="text-muted">Seleccione un archivo CSV para cargar las campañas. El archivo debe cumplir con el formato especificado.</p>
+
+        <div class="input-group mb-3">
+          <input type="file" class="form-control" id="fileInput" (change)="onFileSelected($event)" accept=".csv">
+          <button class="btn btn-success" type="button" (click)="onUpload()" [disabled]="!selectedFile || isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span *ngIf="!isLoading">Cargar Archivo</span>
+          </button>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-danger mt-3" role="alert">
+          {{ errorMessage }}
+        </div>
+      </div>
+
+      <div *ngIf="uploadResponse" class="mt-4">
+        <div class="alert alert-info d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Presupuesto Total Acumulado:</h5>
+          <span class="h4 font-weight-bold">{{ uploadResponse.totalBudget | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <h4 class="mt-4 mb-3">Campañas Cargadas</h4>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover table-bordered">
+            <thead class="thead-dark">
+              <tr>
+                <th>Código</th>
+                <th>Acrónimo</th>
+                <th>RUC Empresa</th>
+                <th>Nombre Empresa</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Clientes</th>
+                <th>Presupuesto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let campaign of uploadResponse.campaigns">
+                <td>{{ campaign.campaignCode }}</td>
+                <td>{{ campaign.campaignAcronym }}</td>
+                <td>{{ campaign.companyRuc }}</td>
+                <td>{{ campaign.companyName }}</td>
+                <td>{{ campaign.campaignDescription }}</td>
+                <td>{{ campaign.campaignDate | date:'yyyy-MM-dd' }}</td>
+                <td class="text-right">{{ campaign.numberOfClients }}</td>
+                <td class="text-right">{{ campaign.campaignBudget | currency:'USD':'symbol':'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

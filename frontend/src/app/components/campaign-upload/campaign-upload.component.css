@@ -1,0 +1,20 @@
+.container {
+  max-width: 1200px;
+}
+
+.card-header {
+  background-color: #0056b3; /* Example bank-like blue */
+}
+
+.table th {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.text-right {
+  text-align: right;
+}
