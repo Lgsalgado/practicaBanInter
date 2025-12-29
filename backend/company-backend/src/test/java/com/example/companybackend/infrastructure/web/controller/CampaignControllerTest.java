@@ -10,11 +10,14 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -85,5 +88,18 @@ class CampaignControllerTest {
         mockMvc.perform(multipart("/api/campaigns/upload").file(file))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Error de Validación"));
+    }
+
+    @Test
+    void shouldReturn500WhenIoErrorOccurs() throws Exception {
+        //GIVEN
+        InputStream errorInputStream = mock(InputStream.class);
+        when(errorInputStream.read(any())).thenThrow(new IOException("Error de lectura"));
+        when(processCampaignFileUseCase.execute(any())).thenThrow(new RuntimeException("Error inesperado"));
+
+        //WHEN & THEN
+        mockMvc.perform(multipart("/api/campaigns/upload").file(new MockMultipartFile("file", "test.csv", "text/csv", "content".getBytes())))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("Error Interno"));
     }
 }

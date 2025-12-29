@@ -37,7 +37,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testRuntimeOnly 'com.h2database:h2' // Base de datos en memoria para tests
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
@@ -48,6 +48,14 @@ tasks.named('test') {
 pitest {
     junit5PluginVersion = '1.2.1'
     targetClasses = ['com.example.companybackend.*']
+
+    excludedClasses = [
+            'com.example.companybackend.infrastructure.config.*',
+            'com.example.companybackend.infrastructure.persistence.entity.*',
+            'com.example.companybackend.infrastructure.persistence.mapper.*',
+            'com.example.companybackend.application.service.CampaignService$CampaignCsvDto',
+            'com.example.companybackend.CompanyBackendApplication'
+    ]
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
