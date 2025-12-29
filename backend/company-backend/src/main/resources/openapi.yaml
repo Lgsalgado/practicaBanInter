@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Company Backend API
+  description: API para la gestión y carga masiva de campañas bancarias.
+  version: 1.0.0
+  contact:
+    name: Developer
+servers:
+  - url: http://localhost:8080
+    description: Servidor Local
+tags:
+  - name: Campañas
+    description: Operaciones relacionadas con campañas
+paths:
+  /api/campaigns/upload:
+    post:
+      tags:
+        - Campañas
+      summary: Carga masiva de campañas desde CSV
+      description: >-
+        Sube un archivo CSV, valida su estructura, persiste la información y devuelve
+        las campañas ordenadas por presupuesto junto con el total acumulado.
+      operationId: uploadCampaigns
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Archivo CSV con los datos de las campañas.
+      responses:
+        '200':
+          description: Archivo procesado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponseDto'
+        '400':
+          description: Error de validación (formato incorrecto, datos faltantes) o archivo vacío.
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Error de Validación: El código de campaña debe ser numérico."
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+    UploadResponseDto:
+      type: object
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignResponseDto'
+        totalBudget:
+          type: number
+          format: double
+          description: Suma total de los presupuestos de las campañas cargadas.
+      required:
+        - campaigns
+        - totalBudget
+
+    CampaignResponseDto:
+      type: object
+      properties:
+        campaignCode:
+          type: integer
+          format: int64
+        campaignAcronym:
+          type: string
+        companyRuc:
+          type: string
+        companyName:
+          type: string
+        campaignDescription:
+          type: string
+        campaignDate:
+          type: string
+          format: date
+          example: "2025-12-26"
+        numberOfClients:
+          type: integer
+          format: int32
+        campaignBudget:
+          type: number
+          format: double
